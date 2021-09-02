@@ -302,7 +302,7 @@ function hireEmployee() {
 	document.companyInformation.employees.push({
 		name:getRandomName(),
 		wage:document.companyInformation.startingWage,
-		shift:1
+		shift:0
 	});
 }
 
