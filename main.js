@@ -3,7 +3,7 @@ document.companyInformation = {
 		{
 			name:"Pepperoni Pizza",
 			source:"Make",
-			price:5,
+			price:8,
 			cost:0,
 			onMenu:true,
 			onHand:0,
@@ -12,7 +12,7 @@ document.companyInformation = {
 		{
 			name:"Cheese Pizza",
 			source:"Make",
-			price:3,
+			price:8,
 			cost:0,
 			onMenu:true,
 			onHand:0,
@@ -21,7 +21,7 @@ document.companyInformation = {
 		{
 			name:"Sausage Pizza",
 			source:"Make",
-			price:6,
+			price:8,
 			cost:0,
 			onMenu:true,
 			onHand:0,
@@ -31,7 +31,7 @@ document.companyInformation = {
 			name:"Cheese",
 			source:"Stock",
 			price:0,
-			cost:.15,
+			cost:.95,
 			onMenu:false,
 			onHand:500,
 			safety:500
@@ -49,7 +49,7 @@ document.companyInformation = {
 			name:"Dough",
 			source:"Stock",
 			price:0,
-			cost:.05,
+			cost:1,
 			onMenu:false,
 			onHand:500,
 			safety:500
@@ -58,10 +58,10 @@ document.companyInformation = {
 			name:"Sausage",
 			source:"Stock",
 			price:0,
-			cost:.01,
+			cost:.75,
 			onMenu:false,
-			onHand:4500,
-			safety:4500
+			onHand:450,
+			safety:450
 		},
 	],
 	billsOfMaterial:[
@@ -87,7 +87,7 @@ document.companyInformation = {
 			children:[
 				{
 					name:"Cheese",
-					quantity:1
+					quantity:1.2
 				},
 				{
 					name:"Dough",
@@ -104,7 +104,7 @@ document.companyInformation = {
 				},
 				{
 					name:"Sausage",
-					quantity:30
+					quantity:5
 				},
 				{
 					name:"Dough",
@@ -115,7 +115,7 @@ document.companyInformation = {
 	],
 	day:1,
 	taxRate:.2,
-	initialEmployeeCount:4,
+	initialEmployeeCount:8,
 	yesterdaySalesCount:0,
 	yesterdayProfit:0,
 	yesterdaySales:0,
@@ -136,7 +136,7 @@ document.companyInformation = {
 	employees:[
 
 	],
-	startingWage:8
+	startingWage:10
 };
 var viewScript = null;
 var employeesScript = null;
@@ -145,6 +145,16 @@ var formatter = new Intl.NumberFormat('en-US', {
 		style: 'currency',
 		currency: 'USD',
 });
+
+var days = [
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday"
+];
 
 createView("createCompany");
 
@@ -162,6 +172,8 @@ function createCompany() {
 	costRollUp();
 	getDailyOrders();
 	showCompanyDashboard();
+
+	//setInterval(nextDay, 3000);
 }
 
 function showCompanyDashboard() {
@@ -171,13 +183,12 @@ function showCompanyDashboard() {
 	document.getElementById("capital").innerHTML = formatCurrency(document.companyInformation.capital);
 	document.getElementById("companyName").innerHTML = document.companyInformation.companyName;
 	document.getElementById("ownerName").innerHTML = document.companyInformation.ownerName;
-	document.getElementById("day").innerHTML = "Day: " + document.companyInformation.day;
+	document.getElementById("day").innerHTML = "Day: " + document.companyInformation.day + " " + days[document.companyInformation.day % 7];
 	document.getElementById("yesterdaySalesCount").innerHTML = "Pizzas Sold: " + document.companyInformation.yesterdaySalesCount;
 	document.getElementById("yesterdayProfit").innerHTML = "Profit: " + formatCurrency(document.companyInformation.yesterdayProfit);
 	document.getElementById("yesterdaySales").innerHTML = "Sales: " + formatCurrency(document.companyInformation.yesterdaySales);
 	document.getElementById("yesterdayLaborCost").innerHTML = "Labor: " + formatCurrency(document.companyInformation.yesterdayLaborCost);
 	document.getElementById("yesterdayMaterialCost").innerHTML = "Material: " + formatCurrency(document.companyInformation.yesterdayMaterialCost);
-	console.log(document.companyInformation);
 }
 
 function createView(viewName) {
@@ -224,6 +235,16 @@ function openEmployees() {
 
 function closeEmployees() {
 	destroyView("employees");
+	showCompanyDashboard();
+}
+
+function openOrders() {
+	destroyView("companyDashboard");
+	createView("orders");
+}
+
+function closeOrders() {
+	destroyView("orders");
 	showCompanyDashboard();
 }
 
@@ -276,6 +297,9 @@ function costRollUp() {
 }
 
 function nextDay() {
+	if(!document.views.companyDashboard.active) {
+		return;
+	}
 	let yesterdaySalesCount = 0;
 	let yesterdayProfit = 0;
 	let yesterdaySales = 0;
@@ -288,13 +312,13 @@ function nextDay() {
 		for(let j in billOfMaterial.children) {
 			let child = billOfMaterial.children[j];
 			let childProduct = getObjectByKeyValue(document.companyInformation.products, "name", child.name);
-			childProduct.onHand -= child.quantity;
+			childProduct.onHand -= child.quantity * order.quantity;
 		}
 
-		document.companyInformation.capital += product.price;
-		yesterdaySalesCount++; 
-		yesterdaySales += product.price;
-		yesterdayMaterialCost += product.cost;
+		document.companyInformation.capital += (product.price * order.quantity);
+		yesterdaySalesCount += order.quantity; 
+		yesterdaySales += product.price * order.quantity;
+		yesterdayMaterialCost += product.cost * order.quantity;
 	}
 
 	for(let i in document.companyInformation.employees) {
@@ -333,14 +357,20 @@ function getObjectByKeyValue(object, key, value) {
 
 function getDailyOrders() {
 	let ordersCount = parseInt((Math.random() * 50) + 50);
+	if(document.companyInformation.day % 7 === 5 || document.companyInformation.day % 7 === 6) {
+		ordersCount *= 2;
+	}
+
 	let orders = [];
 
 	let products = readProductsOnMenu();
 
 	for(let i = 0; i < ordersCount; i++) {
+		let quantity = parseInt((Math.random() * 5) + 1);
 		orders.push({
 			productIndex:i % products.length,
-			productName:products[i % products.length].name
+			productName:products[i % products.length].name,
+			quantity:quantity
 		});
 	}
 

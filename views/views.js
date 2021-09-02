@@ -276,7 +276,7 @@ document.views = {
 						float:right;
 						text-align: center;
 					}
-					.companyDashbordEmployeeButton, .companyDashbordInventoryButton {
+					.companyDashbordEmployeeButton, .companyDashbordInventoryButton, .companyDashbordOrdersButton {
 						margin-left:10
 					}
 					`
@@ -303,6 +303,14 @@ document.views = {
 					innerHTML:"Employees",
 					onclick:"openEmployees()",
 					class:"companyDashbordEmployeeButton"
+				}
+			},
+			{
+				elementType:"button",
+				attributes:{
+					innerHTML:"Orders",
+					onclick:"openOrders()",
+					class:"companyDashbordOrdersButton"
 				}
 			},
 			{
@@ -861,6 +869,167 @@ document.views = {
 										]
 									}
 								].concat(employeesItems)
+							}
+						]
+					}
+				);
+
+				document.views.createAndAddElement(this.elements[this.elements.length - 1], document.body);
+			}
+		},
+	},
+	orders:{
+		active:false,
+		elements:[
+			{
+				elementType:"style",
+				attributes:{
+					innerHTML:`
+					.ordersOuterDiv {
+						width:100%;
+						text-align:center;
+						display: flex;
+  						align-items: center;
+  						justify-content: center;
+					}
+					.ordersTable, .ordersTableHead, .ordersTableData {
+						border-collapse: collapse;
+  						border: 1px solid black;
+					}
+
+					.ordersTableHead, .ordersTableData {
+						padding:10
+					}
+					`
+				}
+			},
+			{
+				elementType:"button",
+				attributes:{
+					innerHTML:"Back",
+					onclick:"closeOrders()"
+				}
+			},
+			{
+				elementType:"div",
+				attributes:{
+					class:"ordersOuterDiv"
+				},
+				children:[
+					{
+						elementType:"h3",
+						attributes:{
+							innerHTML:"Orders"
+						}
+					}	
+				]
+			}
+		],
+		afterRender:function() {
+			let ordersItems = [];
+			for(let i in document.companyInformation.orders) {
+				let order = document.companyInformation.orders[i];
+				let orderProduct = getObjectByKeyValue(document.companyInformation.products, "name", order.productName)
+				ordersItems.push(
+					{
+						elementType:"tr",
+						destroyMeTempObject:true,
+						attributes:{},
+						children:[
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:order.productName,
+									class:"ordersTableData"
+								}
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:order.quantity,
+									class:"ordersTableData"
+								}
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:formatCurrency(orderProduct.price * order.quantity),
+									class:"ordersTableData"
+								}
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:formatCurrency(orderProduct.cost),
+									class:"ordersTableData"
+								}
+							}
+						]
+					}
+				);
+			}
+
+			if(ordersItems.length !== 0) {
+				let rows = []
+				this.elements.push(
+					{
+						elementType:"div",
+						destroyMeTempObject:true,
+						attributes:{
+							class:"ordersOuterDiv"
+						},
+						children:[
+							{
+								elementType:"table",
+								destroyMeTempObject:true,
+								attributes:{
+									class:"ordersTable"
+								},
+								children:[
+									{
+										elementType:"tr",
+										destroyMeTempObject:true,
+										attributes:{},
+										children:[
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Product",
+													class:"ordersTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Quantity",
+													class:"ordersTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Price",
+													class:"ordersTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Cost",
+													class:"ordersTableHead"
+												}
+											}
+										]
+									}
+								].concat(ordersItems)
 							}
 						]
 					}
