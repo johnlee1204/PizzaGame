@@ -138,6 +138,10 @@ document.companyInformation = {
 	],
 	startingWage:10
 };
+
+var originalCompanyInformation = {};
+Object.assign(originalCompanyInformation, document.companyInformation);
+
 var viewScript = null;
 var employeesScript = null;
 
@@ -156,7 +160,20 @@ var days = [
 	"Saturday"
 ];
 
-createView("createCompany");
+if(localStorage.getItem("companyInformation")) {//Continue
+	document.companyInformation = JSON.parse(localStorage.getItem("companyInformation"));
+	document.views = JSON.parse(localStorage.getItem("views"));
+	if(viewScript === null) {
+		viewScript = document.createElement("script");
+		viewScript.src = "views/views.js";
+		document.head.appendChild(viewScript);
+	}
+	viewScript.onload = function() {
+		showCompanyDashboard();
+	}
+} else {//New Game
+	createView("createCompany");
+}
 
 function createCompany() {
 	let ownerNameField = document.getElementById("ownerName");
@@ -277,6 +294,18 @@ function createInitialEmployees() {
 	}
 }
 
+function fireEmployee(employeeIndex) {
+	document.companyInformation.employees.splice(employeeIndex, 1);
+}
+
+function hireEmployee() {
+	document.companyInformation.employees.push({
+		name:getRandomName(),
+		wage:document.companyInformation.startingWage,
+		shift:1
+	});
+}
+
 function costRollUp() {
 	for(let i in document.companyInformation.products) {
 		let product = document.companyInformation.products[i];
@@ -341,6 +370,7 @@ function nextDay() {
 
 	destroyView("companyDashboard");
 	showCompanyDashboard();
+	localStorage.setItem('companyInformation', JSON.stringify(document.companyInformation));
 }
 
 function getBillOfMaterialsByProduct(productName) {
@@ -395,5 +425,15 @@ function purchaseStock() {
 			document.companyInformation.capital -= (product.safety - product.onHand) * product.cost;
 			product.onHand = product.safety;
 		}
+	}
+}
+
+function restart() {
+	let restart = confirm("Are you sure?");
+	if(restart) {
+		localStorage.clear();
+		document.companyInformation = originalCompanyInformation;
+		destroyView("companyDashboard");
+		createView("createCompany");
 	}
 }

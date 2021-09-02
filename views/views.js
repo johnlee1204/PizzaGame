@@ -12,7 +12,7 @@ document.views = {
 
 		this[view].active = true;
 
-		for(i in this[view].elements) {
+		for(let i in this[view].elements) {
 			elementObject = this[view].elements[i];
 			this.createAndAddElement(elementObject, document.body);
 		}
@@ -163,7 +163,7 @@ document.views = {
 									id:"initialCapital",
 									name:"initialCapital",
 									type: "number",
-									value:250000,
+									value:0,
 									required:true
 								}
 							}
@@ -310,6 +310,14 @@ document.views = {
 				attributes:{
 					innerHTML:"Orders",
 					onclick:"openOrders()",
+					class:"companyDashbordOrdersButton"
+				}
+			},
+			{
+				elementType:"button",
+				attributes:{
+					innerHTML:"Restart",
+					onclick:"restart()",
 					class:"companyDashbordOrdersButton"
 				}
 			},
@@ -489,6 +497,23 @@ document.views = {
 								elementType:"td",
 								destroyMeTempObject:true,
 								attributes:{
+									class:"menuTableData"
+								},
+								children:[
+									{
+										elementType:"button",
+										destroyMeTempObject:true,
+										attributes:{
+											innerHTML:"Change Price",
+											onclick:"let newPrice = prompt(\"New Price:\"); if(isNaN(newPrice) || newPrice <= 0){alert(\"Invalid Price!\");return;}document.companyInformation.products[" + i + "].price = newPrice;closeMenu(); openMenu();"
+										}
+									}
+								]
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
 									innerHTML:formatCurrency(product.cost),
 									class:"menuTableData"
 								}
@@ -532,6 +557,14 @@ document.views = {
 												destroyMeTempObject:true,
 												attributes:{
 													innerHTML:"Price",
+													class:"menuTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Change Price",
 													class:"menuTableHead"
 												}
 											},
@@ -747,6 +780,7 @@ document.views = {
 						display: flex;
   						align-items: center;
   						justify-content: center;
+  						margin-top:15
 					}
 					.employeesTable, .employeesTableHead, .employeesTableData {
 						border-collapse: collapse;
@@ -775,11 +809,28 @@ document.views = {
 					{
 						elementType:"h3",
 						attributes:{
+							class:"employeesHeader",
 							innerHTML:"Employees"
 						}
-					}	
+					}
 				]
-			}
+			},
+			{
+				elementType:"div",
+				attributes:{
+					class:"employeesOuterDiv"
+				},
+				children:[
+					{
+						elementType:"button",
+						attributes:{
+							class:"employeesHireButton",
+							innerHTML:"Hire Employee",
+							onclick:"hireEmployee();closeEmployees(); openEmployees();"
+						}
+					}
+				]
+			},
 		],
 		afterRender:function() {
 			let employeesItems = [];
@@ -811,7 +862,41 @@ document.views = {
 								elementType:"td",
 								destroyMeTempObject:true,
 								attributes:{
-									innerHTML:employee.shift,
+									class:"employeesTableData"
+								},
+								children:[
+									{
+										elementType:"button",
+										destroyMeTempObject:true,
+										attributes:{
+											innerHTML:"Change Wage",
+											onclick:"let newRate = prompt(\"New Rate:\"); if(isNaN(newRate) || newRate <= 0){alert(\"Invalid Rate!\");return;}document.companyInformation.employees[" + i + "].wage = newRate;closeEmployees(); openEmployees();"
+										}
+									}
+								]
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									class:"employeesTableData"
+								},
+								children:[
+									{
+										elementType:"button",
+										destroyMeTempObject:true,
+										attributes:{
+											innerHTML:"Fire",
+											onclick:"fireEmployee(" + i + ");closeEmployees(); openEmployees();"
+										}
+									}
+								]
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:employee.shift + 1,
 									class:"employeesTableData"
 								}
 							}
@@ -855,6 +940,22 @@ document.views = {
 												destroyMeTempObject:true,
 												attributes:{
 													innerHTML:"Wage",
+													class:"employeesTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Change Wage",
+													class:"employeesTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Fire",
 													class:"employeesTableHead"
 												}
 											},
