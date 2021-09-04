@@ -121,6 +121,8 @@ document.companyInformation = {
 	yesterdaySales:0,
 	yesterdayLaborCost:0,
 	yesterdayMaterialCost:0,
+	yesterdaysOrders:[],
+	orders:[],
 	shifts:[
 		{
 			name:"First",
@@ -197,7 +199,7 @@ function showCompanyDashboard() {
 	destroyView("createCompany");
 	createView("companyDashboard");
 
-	document.getElementById("capital").innerHTML = formatCurrency(document.companyInformation.capital);
+	document.getElementById("capital").innerHTML = "Capital: " + formatCurrency(document.companyInformation.capital);
 	document.getElementById("companyName").innerHTML = document.companyInformation.companyName;
 	document.getElementById("ownerName").innerHTML = document.companyInformation.ownerName;
 	document.getElementById("day").innerHTML = "Day: " + document.companyInformation.day + " " + days[document.companyInformation.day % 7];
@@ -265,6 +267,16 @@ function closeOrders() {
 	showCompanyDashboard();
 }
 
+function openYesterdaysOrders() {
+	destroyView("companyDashboard");
+	createView("yesterdaysOrders");
+}
+
+function closeYesterdaysOrders() {
+	destroyView("yesterdaysOrders");
+	showCompanyDashboard();
+}
+
 function formatCurrency($amount) {
 	return formatter.format($amount);
 }
@@ -319,7 +331,7 @@ function costRollUp() {
 				});
 				costTotal += childProduct.cost * billOfMaterial.children[j].quantity;
 			
-}
+			}
 			product.cost = costTotal;
 		}
 	}
@@ -365,6 +377,8 @@ function nextDay() {
 	document.companyInformation.day++;
 
 	purchaseStock();
+
+	document.companyInformation.yesterdaysOrders = document.companyInformation.orders;
 
 	getDailyOrders();
 

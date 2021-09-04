@@ -254,30 +254,33 @@ document.views = {
 				elementType:"style",
 				attributes:{
 					innerHTML:`
-					.companyDashbordOutterDiv {
+					.companyDashboardOutterDiv {
 						width:100%;
 						display: block;
 					}
-					.companyDashbordInnerLeftDiv {
+					.companyDashboardInnerLeftDiv {
 						width:33%;
 						display: inline-block;
 						float:left;
 						text-align: center;
 					}
-					.companyDashbordInnerCenterDiv {
+					.companyDashboardInnerCenterDiv {
 						width:33%;
 						display: inline-block;
 						float:center;
 						text-align: center;
 					}
-					.companyDashbordInnerRightDiv {
+					.companyDashboardInnerRightDiv {
 						width:33%;
 						display: inline-block;
 						float:right;
 						text-align: center;
 					}
-					.companyDashbordEmployeeButton, .companyDashbordInventoryButton, .companyDashbordOrdersButton {
+					.companyDashboardEmployeeButton, .companyDashboardInventoryButton, .companyDashboardOrdersButton, .companyDashboardYesterdaysOrdersButton {
 						margin-left:10
+					}
+					.companyDashboardFieldSet {
+						display: inline-block
 					}
 					`
 				}
@@ -294,7 +297,7 @@ document.views = {
 				attributes:{
 					innerHTML:"Inventory",
 					onclick:"openInventory()",
-					class:"companyDashbordInventoryButton"
+					class:"companyDashboardInventoryButton"
 				}
 			},
 			{
@@ -302,7 +305,7 @@ document.views = {
 				attributes:{
 					innerHTML:"Employees",
 					onclick:"openEmployees()",
-					class:"companyDashbordEmployeeButton"
+					class:"companyDashboardEmployeeButton"
 				}
 			},
 			{
@@ -310,7 +313,15 @@ document.views = {
 				attributes:{
 					innerHTML:"Orders",
 					onclick:"openOrders()",
-					class:"companyDashbordOrdersButton"
+					class:"companyDashboardOrdersButton"
+				}
+			},
+			{
+				elementType:"button",
+				attributes:{
+					innerHTML:"Yesterdays Orders",
+					onclick:"openYesterdaysOrders()",
+					class:"companyDashboardYesterdaysOrdersButton"
 				}
 			},
 			{
@@ -318,19 +329,19 @@ document.views = {
 				attributes:{
 					innerHTML:"Restart",
 					onclick:"restart()",
-					class:"companyDashbordOrdersButton"
+					class:"companyDashboardOrdersButton"
 				}
 			},
 			{
 				elementType:"div",
 				attributes:{
-					class:"companyDashbordOutterDiv"
+					class:"companyDashboardOutterDiv"
 				},
 				children:[
 					{
 						elementType:"div",
 						attributes:{
-							class:"companyDashbordInnerLeftDiv"
+							class:"companyDashboardInnerLeftDiv"
 						},
 						children:[
 							{
@@ -340,41 +351,56 @@ document.views = {
 								}
 							},
 							{
-								elementType:"h3",
-								attributes:{
-									id:"yesterdayProfit"
-								}
-							},
-							{
-								elementType:"h3",
-								attributes:{
-									id:"yesterdaySalesCount"
-								}
-							},
-							{
-								elementType:"h3",
-								attributes:{
-									id:"yesterdaySales"
-								}
-							},
-							{
-								elementType:"h3",
-								attributes:{
-									id:"yesterdayLaborCost"
-								}
-							},
-							{
-								elementType:"h3",
-								attributes:{
-									id:"yesterdayMaterialCost"
-								}
+								elementType: "fieldSet",
+								attributes: {
+									class:"companyDashboardFieldSet"
+								},
+								children:[
+									{
+										elementType:"legend",
+										attributes:{
+											class:"companyDashboardFieldSetLegend",
+											innerHTML: "Yesterdays Numbers"
+										}
+									},
+									{
+										elementType:"h3",
+										attributes:{
+											id:"yesterdayProfit"
+										}
+									},
+									{
+										elementType:"h3",
+										attributes:{
+											id:"yesterdaySalesCount"
+										}
+									},
+									{
+										elementType:"h3",
+										attributes:{
+											id:"yesterdaySales"
+										}
+									},
+									{
+										elementType:"h3",
+										attributes:{
+											id:"yesterdayLaborCost"
+										}
+									},
+									{
+										elementType:"h3",
+										attributes:{
+											id:"yesterdayMaterialCost"
+										}
+									}
+								]
 							}
 						]
 					},
 					{
 						elementType:"div",
 						attributes:{
-							class:"companyDashbordInnerCenterDiv"
+							class:"companyDashboardInnerCenterDiv"
 						},
 						children:[
 							{
@@ -401,7 +427,7 @@ document.views = {
 					{
 						elementType:"div",
 						attributes:{
-							class:"companyDashbordInnerRightDiv"
+							class:"companyDashboardInnerRightDiv"
 						},
 						children:[
 							{
@@ -1131,6 +1157,167 @@ document.views = {
 										]
 									}
 								].concat(ordersItems)
+							}
+						]
+					}
+				);
+
+				document.views.createAndAddElement(this.elements[this.elements.length - 1], document.body);
+			}
+		},
+	},
+	yesterdaysOrders:{
+		active:false,
+		elements:[
+			{
+				elementType:"style",
+				attributes:{
+					innerHTML:`
+					.yesterdaysOrdersOuterDiv {
+						width:100%;
+						text-align:center;
+						display: flex;
+  						align-items: center;
+  						justify-content: center;
+					}
+					.yesterdaysOrdersTable, .yesterdaysOrdersTableHead, .yesterdaysOrdersTableData {
+						border-collapse: collapse;
+  						border: 1px solid black;
+					}
+
+					.yesterdaysOrdersTableHead, .yesterdaysOrdersTableData {
+						padding:10
+					}
+					`
+				}
+			},
+			{
+				elementType:"button",
+				attributes:{
+					innerHTML:"Back",
+					onclick:"closeYesterdaysOrders()"
+				}
+			},
+			{
+				elementType:"div",
+				attributes:{
+					class:"yesterdaysOrdersOuterDiv"
+				},
+				children:[
+					{
+						elementType:"h3",
+						attributes:{
+							innerHTML:"Yesterdays Orders"
+						}
+					}
+				]
+			}
+		],
+		afterRender:function() {
+			let yesterdaysOrdersItems = [];
+			for(let i in document.companyInformation.yesterdaysOrders) {
+				let order = document.companyInformation.yesterdaysOrders[i];
+				let orderProduct = getObjectByKeyValue(document.companyInformation.products, "name", order.productName)
+				yesterdaysOrdersItems.push(
+					{
+						elementType:"tr",
+						destroyMeTempObject:true,
+						attributes:{},
+						children:[
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:order.productName,
+									class:"yesterdaysOrdersTableData"
+								}
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:order.quantity,
+									class:"yesterdaysOrdersTableData"
+								}
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:formatCurrency(orderProduct.price * order.quantity),
+									class:"yesterdaysOrdersTableData"
+								}
+							},
+							{
+								elementType:"td",
+								destroyMeTempObject:true,
+								attributes:{
+									innerHTML:formatCurrency(orderProduct.cost),
+									class:"yesterdaysOrdersTableData"
+								}
+							}
+						]
+					}
+				);
+			}
+
+			if(yesterdaysOrdersItems.length !== 0) {
+				let rows = []
+				this.elements.push(
+					{
+						elementType:"div",
+						destroyMeTempObject:true,
+						attributes:{
+							class:"yesterdaysOrdersOuterDiv"
+						},
+						children:[
+							{
+								elementType:"table",
+								destroyMeTempObject:true,
+								attributes:{
+									class:"yesterdaysOrdersTable"
+								},
+								children:[
+									{
+										elementType:"tr",
+										destroyMeTempObject:true,
+										attributes:{},
+										children:[
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Product",
+													class:"yesterdaysOrdersTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Quantity",
+													class:"yesterdaysOrdersTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Price",
+													class:"yesterdaysOrdersTableHead"
+												}
+											},
+											{
+												elementType:"th",
+												destroyMeTempObject:true,
+												attributes:{
+													innerHTML:"Cost",
+													class:"yesterdaysOrdersTableHead"
+												}
+											}
+										]
+									}
+								].concat(yesterdaysOrdersItems)
 							}
 						]
 					}

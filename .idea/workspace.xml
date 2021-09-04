@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d0cc1c50-a117-40b2-b1b0-a8f687775273" name="Default Changelist" comment="">
+    <list default="true" id="d0cc1c50-a117-40b2-b1b0-a8f687775273" name="Default Changelist" comment="Add saving progress to local storage and restoring on refresh.&#10;&#10;Add restart button.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/views/views.js" beforeDir="false" afterPath="$PROJECT_DIR$/views/views.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +25,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="vue.rearranger.settings.migration" value="true" />
@@ -36,6 +40,7 @@
       <updated>1630608483510</updated>
       <workItem from="1630608484618" duration="146000" />
       <workItem from="1630613826163" duration="3419000" />
+      <workItem from="1630782921748" duration="1302000" />
     </task>
     <task id="LOCAL-00001" summary="Add saving progress to local storage and restoring on refresh.&#10;&#10;Add restart button.">
       <created>1630617154935</created>
